@@ -25,8 +25,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             this.IsVoting = (bool)stream.ReceiveNext();
         }
     }
-
-    public void RevealAction()
+    [PunRPC]
+    public void RevealCards()
     {
 
         if (isRevealed)
