@@ -1,10 +1,11 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AddVote : MonoBehaviour
+public class AddVote : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TextMeshProUGUI VotedValueText;
     [SerializeField] private TextMeshProUGUI VotingOptionText;
