@@ -27,7 +27,7 @@ public class RevealButton : MonoBehaviourPun
     [PunRPC]
     public void RevealCards()
     {
-        if (Players == null)
+        //if (Players.Length == 0 || Players.Length!= PhotonNetwork.CurrentRoom.PlayerCount)
             Players = GameObject.FindGameObjectsWithTag("Player");
 
         foreach (GameObject selectedPlayer in Players)

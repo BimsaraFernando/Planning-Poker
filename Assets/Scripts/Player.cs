@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviourPunCallbacks, IPunObservable
@@ -9,8 +10,13 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsVoting = false;
     [SerializeField] public string Vote = "0";
     [SerializeField] private bool isRevealed = false;
-    private Quaternion initialRotation= Quaternion.Euler(0f, 45f, 0f); // Initial rotation of the card
+    [SerializeField] public TextMeshProUGUI playerNameText;
+    private Quaternion initialRotation= Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
 
+    public void Start()
+    {
+        //playerNameText.text = PhotonNetwork.PlayerList.;
+    }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

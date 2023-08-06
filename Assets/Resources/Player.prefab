@@ -304,6 +304,7 @@ MonoBehaviour:
   IsVoting: 0
   Vote: 0
   isRevealed: 0
+  playerNameText: {fileID: 0}
 --- !u!114 &-3047828280029663722
 MonoBehaviour:
   m_ObjectHideFlags: 0
