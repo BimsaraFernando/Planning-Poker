@@ -1,6 +1,5 @@
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -10,8 +9,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsVoting = false;
     [SerializeField] public TextMeshProUGUI Vote ;
     [SerializeField] private bool isRevealed = false;
+    [SerializeField] private bool isVoted = false;
     [SerializeField] public TextMeshProUGUI playerNameText;
-    public GameObject[] VotingOptions;
     private Quaternion initialRotation= Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
 
     public void Start()
@@ -19,8 +18,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (photonView.IsMine)
         {
             //set options
-            VotingOptions = GameObject.FindGameObjectsWithTag("VotingOption");
-            for (int i = 0; i < VotingOptions.Length; i++) { VotingOptions[i].SetActive(true); }
+
         }
         //playerNameText.text = PhotonNetwork.PlayerList.;
     }
@@ -76,7 +74,10 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public void SelectVoteRPC(string newVote)
     {
         if (photonView.IsMine)
-        Vote.text = newVote;
+        {
+            Vote.text = newVote;
+            isVoted = true;
+        }
     }
 
     public void SelectVote(string newVote)

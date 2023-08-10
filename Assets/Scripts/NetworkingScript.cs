@@ -1,10 +1,7 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class NetworkingScript : MonoBehaviourPunCallbacks
 {
@@ -16,8 +13,20 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     public TextMeshProUGUI onlineCount;
     private PhotonView PV;
 
-    public Transform[] spawnPositions = new Transform[10];
-    [SerializeField] public bool[] SpawnPositionsAvailability = { true, true, true, true, true, true, true, true, true, true };
+    [SerializeField] public static Vector3[] spawnPositions = new Vector3[] { 
+        new Vector3(-399f, 114f, 0f),
+        new Vector3(-312f,114f,0f),
+        new Vector3(-224f,114f,0f),
+        new Vector3(-138f,114f,0f),
+        new Vector3(-49f,114f,0f),
+        new Vector3(34f,114f,0f),
+        new Vector3(124f,114f,0f),
+        new Vector3(210.5f,114f,0f),
+        new Vector3(300f,114f,0f),
+        new Vector3(391f,114f,0f)
+    };
+    [SerializeField] public static GameObject[] spawnPositionsObjects = new GameObject[10];
+    [SerializeField] public static bool[] SpawnPositionsAvailability = { true, true, true, true, true, true, true, true, true, true };
 
     public static NetworkingScript Instance;
 
@@ -27,6 +36,12 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.ConnectUsingSettings();
         connectingText.text = "Connecting ...";
+
+        //for(int i = 0;i < spawnPositions.Length; i++)
+        //{
+        //    spawnPositions[i] = spawnPositionsObjects[i].transform.position;
+        //}
+
     }
     private void Awake()
     {
@@ -42,6 +57,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = false;
         roomOptions.MaxPlayers = 20;
         PhotonNetwork.JoinOrCreateRoom("Estimation", roomOptions, TypedLobby.Default);
+
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -57,12 +73,15 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     {
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
 
+
         // Spawn the player when they join the room
         SpawnPlayer();
     }
 
     private void SpawnPlayer()
     {
+        spawnPositionsObjects = GameObject.FindGameObjectsWithTag("SpawnPosition");
+
         // Instantiate the player prefab and position it in a spawn point
         Vector3 spawnPosition = GetSpawnPosition();
         myCard = PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
@@ -72,14 +91,16 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount<11)
         {
-            Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount].position;
+            //Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount].position;
             
-            //Vector3 spawnPosition = spawnPositions[nextSpawnIndex].position;
-            //nextSpawnIndex++;
+            Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
+            nextSpawnIndex++;
             return spawnPosition;
         }
         else
         {
+            //add checking any empty spawn positions logic here
+
             Debug.LogWarning("No available spawn positions.");
             return Vector3.zero; // Return a default position if no spawn position is available
         }
@@ -93,6 +114,8 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
     private void Update()
     {
+        if(PhotonNetwork.InRoom) { 
         NetworkingScript.Instance.onlineCount.text = "Online :" + PhotonNetwork.CurrentRoom.PlayerCount.ToString();
+        }
     }
 }
