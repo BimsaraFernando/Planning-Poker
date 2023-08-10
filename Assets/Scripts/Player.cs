@@ -8,13 +8,20 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region IPunObservable implementation
     public bool IsVoting = false;
-    [SerializeField] public string Vote = "0";
+    [SerializeField] public TextMeshProUGUI Vote ;
     [SerializeField] private bool isRevealed = false;
     [SerializeField] public TextMeshProUGUI playerNameText;
+    public GameObject[] VotingOptions;
     private Quaternion initialRotation= Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
 
     public void Start()
     {
+        if (photonView.IsMine)
+        {
+            //set options
+            VotingOptions = GameObject.FindGameObjectsWithTag("VotingOption");
+            for (int i = 0; i < VotingOptions.Length; i++) { VotingOptions[i].SetActive(true); }
+        }
         //playerNameText.text = PhotonNetwork.PlayerList.;
     }
 
@@ -23,12 +30,12 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (stream.IsWriting)
         {
             // We own this player: send the others our data
-            stream.SendNext(IsVoting);
+            stream.SendNext(Vote.text);
         }
         else
         {
             // Network player, receive data
-            this.IsVoting = (bool)stream.ReceiveNext();
+            this.Vote.text = (string)stream.ReceiveNext();
         }
     }
     [PunRPC]
@@ -50,7 +57,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     private IEnumerator RotateCardSmoothly(Quaternion targetRotation)
     {
         float startTime = Time.time;
-        float duration = 1.0f; // Adjust the duration of the rotation
+        float duration = 0.75f; // Adjust the duration of the rotation
 
         Quaternion startRotation = transform.rotation;
 
@@ -63,6 +70,20 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
         // Ensure the rotation is exactly the target rotation
         transform.rotation = targetRotation;
+    }
+
+    [PunRPC]
+    public void SelectVoteRPC(string newVote)
+    {
+        if (photonView.IsMine)
+        Vote.text = newVote;
+    }
+
+    public void SelectVote(string newVote)
+    {
+        if (photonView.IsMine)
+            Vote.text = newVote;
+        photonView.RPC("SelectVoteRPC", RpcTarget.All, newVote);
     }
 
     #endregion

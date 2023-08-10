@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class AddVote : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private TextMeshProUGUI VotedValueText;
     [SerializeField] private TextMeshProUGUI VotingOptionText;
+
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +24,9 @@ public class AddVote : MonoBehaviourPunCallbacks
 
     public void SelectVote()
     {
-        VotedValueText.text = VotingOptionText.text;
+        NetworkingScript.Instance.AddVote(VotingOptionText.text);
+            //photonView.RPC("SelectVoteRPC", RpcTarget.AllBuffered, VotingOptionText.text);
     }
+
+
 }
