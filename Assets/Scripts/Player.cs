@@ -11,7 +11,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool isRevealed = false;
     [SerializeField] private bool isVoted = false;
     [SerializeField] public TextMeshProUGUI playerNameText;
-    private Quaternion initialRotation= Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
+    private Quaternion initialRotation = Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
+    [SerializeField] private GameObject rotatingItems;
 
     public void Start()
     {
@@ -39,7 +40,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void RevealCards()
     {
-
+        //rotatingItems.transform.Rotate(0f, 180f, 0f);
         if (isRevealed)
         {
             StartCoroutine(RotateCardSmoothly(initialRotation));
@@ -57,17 +58,17 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         float startTime = Time.time;
         float duration = 0.75f; // Adjust the duration of the rotation
 
-        Quaternion startRotation = transform.rotation;
+        Quaternion startRotation = rotatingItems.transform.rotation;
 
         while (Time.time - startTime < duration)
         {
             float t = (Time.time - startTime) / duration;
-            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+            rotatingItems.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
             yield return null;
         }
 
         // Ensure the rotation is exactly the target rotation
-        transform.rotation = targetRotation;
+        rotatingItems.transform.rotation = targetRotation;
     }
 
     [PunRPC]

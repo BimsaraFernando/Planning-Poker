@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -8,10 +9,13 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     [SerializeField] public TextMeshProUGUI connectingText;
     [SerializeField] public GameObject menuCanvas;
     [SerializeField] public GameObject gameCanvas;
-    private int nextSpawnIndex = 0;
+    public static int nextSpawnIndex = 0;
     public GameObject myCard;
     public TextMeshProUGUI onlineCount;
     private PhotonView PV;
+
+    [SerializeField] public GameObject[] Players;
+
 
     [SerializeField] public static Vector3[] spawnPositions = new Vector3[] { 
         new Vector3(-399f, 114f, 0f),
@@ -85,15 +89,58 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         // Instantiate the player prefab and position it in a spawn point
         Vector3 spawnPosition = GetSpawnPosition();
         myCard = PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
+        photonView.RPC("setCanvasAsParentRPC", RpcTarget.All);
+
+        //StartCoroutine(checkedOtherExistingPlayers());
+
+
+    }
+
+
+
+    [PunRPC]
+    public void setCanvasAsParentRPC()
+    {
+        Debug.Log("setCanvasAsParentRPC");
+        StartCoroutine(checkedOtherExistingPlayers());
+    }
+
+
+    IEnumerator checkedOtherExistingPlayers()
+    {
+        yield return new WaitForSeconds(2);
+        Debug.Log("setCanvasAsParent");
+        setCanvasAsParent();
+
+
+    }
+
+    /*    public void OnPlayerEnteredRoom(Player newPlayer)   
+        {
+            newPlayer.transform.SetParent(gameCanvas.transform);
+
+        }*/
+
+    public void setCanvasAsParent()
+    {
+        Players = GameObject.FindGameObjectsWithTag("Player");
+        Debug.Log(Players.Length);
+        if (Players.Length>0) { 
+        for(int i = 0; i < Players.Length; i++)
+        {
+            Players[i].transform.SetParent(gameCanvas.transform);
+        }
+        }
+
     }
 
     private Vector3 GetSpawnPosition()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount<11)
         {
-            //Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount].position;
+            Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount];
             
-            Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
+            //Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
             nextSpawnIndex++;
             return spawnPosition;
         }
