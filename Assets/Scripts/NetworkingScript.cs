@@ -1,6 +1,7 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -31,9 +32,9 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         new Vector3(300f,114f,0f),
         new Vector3(391f,114f,0f)
     };
-    [SerializeField] public static GameObject[] spawnPositionsObjects = new GameObject[10];
-    [SerializeField] public static bool[] SpawnPositionsAvailability = { true, true, true, true, true, true, true, true, true, true };
+    //[SerializeField] public static GameObject[] spawnPositionsObjects = new GameObject[10];
 
+    public static List<int> availableSpawnIndices = new List<int> { 0,1,2,3,4,5,6,7,8,9};
     public static NetworkingScript Instance;
 
 
@@ -63,7 +64,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
     }
 
-    public void JoinOrCreateRoom(string nickname)
+/*    public void JoinOrCreateRoom(string nickname)
     {
         Debug.Log("joining ...");
         RoomOptions roomOptions = new RoomOptions();
@@ -71,7 +72,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = 10;
         PhotonNetwork.JoinOrCreateRoom("Estimation", roomOptions, TypedLobby.Default);
 
-    }
+    }*/
 
     public override void OnDisconnected(DisconnectCause cause)
     {
@@ -85,28 +86,31 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
-        Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
         gameCanvas.SetActive(true);
         menuCanvas.SetActive(false);
-        // Spawn the player when they join the room
-        SpawnPlayer();
+
+        if(availableSpawnIndices.Count > 0) { 
+            // Spawn the player when they join the room
+            SpawnPlayer();
+        }
     }
 
+    [PunRPC]
     private void SpawnPlayer()
     {
-        spawnPositionsObjects = GameObject.FindGameObjectsWithTag("SpawnPosition");
+        //spawnPositionsObjects = GameObject.FindGameObjectsWithTag("SpawnPosition");
 
         // Instantiate the player prefab and position it in a spawn point
         Vector3 spawnPosition = GetSpawnPosition();
         myCard = PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
-        photonView.RPC("setCanvasAsParentRPC", RpcTarget.All);
+        photonView.RPC("SetCanvasAsParentRPC", RpcTarget.All);
 
         //StartCoroutine(checkedOtherExistingPlayers());
 
     }
 
     [PunRPC]
-    public void setCanvasAsParentRPC()
+    public void SetCanvasAsParentRPC()
     {
         Debug.Log("setCanvasAsParentRPC");
         StartCoroutine(checkedOtherExistingPlayers());
@@ -117,7 +121,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(2);
         Debug.Log("setCanvasAsParent");
-        setCanvasAsParent();
+        SetCanvasAsParent();
     }
 
     /*    public void OnPlayerEnteredRoom(Player newPlayer)   
@@ -126,7 +130,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
         }*/
 
-    public void setCanvasAsParent()
+    public void SetCanvasAsParent()
     {
         Players = GameObject.FindGameObjectsWithTag("Player");
         Debug.Log(Players.Length);
@@ -143,13 +147,20 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
     private Vector3 GetSpawnPosition()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount<11)
+        /*        if (PhotonNetwork.CurrentRoom.PlayerCount<11)
+                {
+                    Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount];
+
+                    //Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
+                    nextSpawnIndex++;
+                    return spawnPosition;
+                }*/
+
+        if (availableSpawnIndices.Count > 0)
         {
-            Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount];
-            
-            //Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
-            nextSpawnIndex++;
-            return spawnPosition;
+            int spawnIndex = availableSpawnIndices[0];
+            availableSpawnIndices.RemoveAt(0);
+            return spawnPositions[spawnIndex];
         }
         else
         {

@@ -1,3 +1,5 @@
+using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,14 +19,16 @@ public class JoinRoom : MonoBehaviour
         
     }
 
-    public void JoinOrCreateRoom(string roomName)
+    public void JoinOrCreateRoom(string NickName)
     {
-        NetworkingScript.Instance.JoinOrCreateRoom(roomName);
-        Debug.Log("calling join room ...");
+        //NetworkingScript.Instance.JoinOrCreateRoom("Nickname");
+        //Debug.Log("calling join room ...");
 
-        /*        if (!string.IsNullOrEmpty(nickname))
-                {
-                    return;
-                }*/
+        Debug.Log("joining ...");
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.IsVisible = false;
+        roomOptions.MaxPlayers = 10;
+        PhotonNetwork.JoinOrCreateRoom("Estimation", roomOptions, TypedLobby.Default);
+
     }
 }

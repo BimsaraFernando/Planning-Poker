@@ -7,15 +7,10 @@ using TMPro;
 
 public class TestConnect : MonoBehaviourPunCallbacks
 {
-    //[SerializeField] public GameObject _adminButton;
     [SerializeField] public TextMeshProUGUI _LoadingText;
     [SerializeField] public TextMeshProUGUI _playerNameInput;
-    //[SerializeField] public TextMeshProUGUI _playerName;
 
-    //[SerializeField] public GameObject _joinRoomMenuGameObject;
-    //[SerializeField] public GameObject _roomListingsMenuGameObject;
     [SerializeField] public GameObject _startButton;
-    //[SerializeField] public GameObject _BackgroundWithCharacters;
 
     public override void OnConnectedToMaster()
     {
@@ -46,10 +41,7 @@ public class TestConnect : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = _playerNameInput.text;
             PhotonNetwork.GameVersion = "0.0.1";
             PhotonNetwork.ConnectUsingSettings();
-            //_joinRoomMenuGameObject.SetActive(true);
-            //_roomListingsMenuGameObject.SetActive(true);
             _startButton.SetActive(false);
-            //_BackgroundWithCharacters.SetActive(false);
         }
 
     }
