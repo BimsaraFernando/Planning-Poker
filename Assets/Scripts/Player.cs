@@ -18,10 +18,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
-            //set options
-
+            //PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.UserId.Substring(0, 4);
         }
-        //playerNameText.text = PhotonNetwork.PlayerList.;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -30,11 +28,13 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         {
             // We own this player: send the others our data
             stream.SendNext(Vote.text);
+            //stream.SendNext(playerNameText.text);
         }
         else
         {
             // Network player, receive data
             this.Vote.text = (string)stream.ReceiveNext();
+            //this.playerNameText.text = (string)stream.ReceiveNext();
         }
     }
     [PunRPC]

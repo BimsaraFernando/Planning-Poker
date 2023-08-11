@@ -9,6 +9,8 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     [SerializeField] public TextMeshProUGUI connectingText;
     [SerializeField] public GameObject menuCanvas;
     [SerializeField] public GameObject gameCanvas;
+    [SerializeField] public string nickname;
+
     public static int nextSpawnIndex = 0;
     public GameObject myCard;
     public TextMeshProUGUI onlineCount;
@@ -54,12 +56,19 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        gameCanvas.SetActive(true);
-        menuCanvas.SetActive(false);
+        gameCanvas.SetActive(false);
+        menuCanvas.SetActive(true);
         connectingText.text = "Connected!";
+
+
+    }
+
+    public void JoinOrCreateRoom(string nickname)
+    {
+        Debug.Log("joining ...");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsVisible = false;
-        roomOptions.MaxPlayers = 20;
+        roomOptions.MaxPlayers = 10;
         PhotonNetwork.JoinOrCreateRoom("Estimation", roomOptions, TypedLobby.Default);
 
     }
@@ -76,8 +85,9 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
-
-
+        Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
+        gameCanvas.SetActive(true);
+        menuCanvas.SetActive(false);
         // Spawn the player when they join the room
         SpawnPlayer();
     }
@@ -93,10 +103,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
         //StartCoroutine(checkedOtherExistingPlayers());
 
-
     }
-
-
 
     [PunRPC]
     public void setCanvasAsParentRPC()
@@ -111,8 +118,6 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2);
         Debug.Log("setCanvasAsParent");
         setCanvasAsParent();
-
-
     }
 
     /*    public void OnPlayerEnteredRoom(Player newPlayer)   
@@ -129,7 +134,9 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         for(int i = 0; i < Players.Length; i++)
         {
             Players[i].transform.SetParent(gameCanvas.transform);
-        }
+            //Players[i]..FindGameObjectsWithTag("PlayerName").text = PhotonNetwork.PlayerList..UserId.Substring(0, 4);
+
+            }
         }
 
     }
@@ -147,7 +154,6 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         else
         {
             //add checking any empty spawn positions logic here
-
             Debug.LogWarning("No available spawn positions.");
             return Vector3.zero; // Return a default position if no spawn position is available
         }
