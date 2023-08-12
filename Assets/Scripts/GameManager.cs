@@ -3,11 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
-    [SerializeField] public TextMeshProUGUI TotalPlayersCount;
+    //[SerializeField] public TextMeshProUGUI TotalPlayersCount;
+    public int nextSpawnIndex { get; set; }
+
+    public int GetNextSpawnIndex()
+    {
+        return nextSpawnIndex;
+    }
+
+    public void SetNextSpawnIndex()
+    {
+        nextSpawnIndex++;
+    }
 
     private void Awake()
     {
@@ -23,7 +35,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        TotalPlayersCount.text = "Total Online :" + PhotonNetwork.CountOfPlayers.ToString();
+        //TotalPlayersCount.text = "Total Online :" + PhotonNetwork.CountOfPlayers.ToString();
     }
 
     void NewVoteAdded() {
