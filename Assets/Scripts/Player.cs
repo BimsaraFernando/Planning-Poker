@@ -9,10 +9,12 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsVoting = false;
     [SerializeField] public TextMeshProUGUI Vote ;
     [SerializeField] private bool isRevealed = false;
-    [SerializeField] private bool isVoted = false;
+    [SerializeField] private bool hasVoted = false;
     [SerializeField] public TextMeshProUGUI playerNameText;
     private Quaternion initialRotation = Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
     [SerializeField] private GameObject rotatingItems;
+    [SerializeField] private GameObject checkmark;
+
 
     public void Start()
     {
@@ -22,12 +24,25 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    void Update()
+    {
+        if (hasVoted)
+        {
+            checkmark.SetActive(true);
+        }
+        else
+        {
+            checkmark.SetActive(false);
+        }
+    }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
             // We own this player: send the others our data
             stream.SendNext(Vote.text);
+            stream.SendNext(hasVoted);
             stream.SendNext(playerNameText.text);
             //stream.SendNext(playerNameText.text);
         }
@@ -35,7 +50,9 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         {
             // Network player, receive data
             this.Vote.text = (string)stream.ReceiveNext();
+            this.hasVoted = (bool)stream.ReceiveNext();
             this.playerNameText.text = (string)stream.ReceiveNext();
+
 
             //this.playerNameText.text = (string)stream.ReceiveNext();
         }
@@ -47,6 +64,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (isRevealed)
         {
             StartCoroutine(RotateCardSmoothly(initialRotation));
+            hasVoted = false;
+            Vote.text = "";
         }
         else
         {
@@ -80,7 +99,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (photonView.IsMine)
         {
             Vote.text = newVote;
-            isVoted = true;
+            hasVoted = true;
         }
     }
 
