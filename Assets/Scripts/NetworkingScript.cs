@@ -8,8 +8,9 @@ using UnityEngine;
 public class NetworkingScript : MonoBehaviourPunCallbacks
 {
     [SerializeField] public TextMeshProUGUI connectingText;
-    [SerializeField] public GameObject menuCanvas;
-    [SerializeField] public GameObject gameCanvas;
+    [SerializeField] public GameObject ConnetMenuItems;
+    [SerializeField] public GameObject GamePlayItems;
+    [SerializeField] public GameObject JoinRoomMenuItems;
     [SerializeField] public string nickname;
 
     public static int nextSpawnIndex = 0;
@@ -32,7 +33,6 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         new Vector3(300f,114f,0f),
         new Vector3(391f,114f,0f)
     };
-    //[SerializeField] public static GameObject[] spawnPositionsObjects = new GameObject[10];
 
     public static List<int> availableSpawnIndices = new List<int> { 0,1,2,3,4,5,6,7,8,9};
     public static NetworkingScript Instance;
@@ -41,13 +41,7 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
         connectingText.text = "Connecting ...";
-
-        //for(int i = 0;i < spawnPositions.Length; i++)
-        //{
-        //    spawnPositions[i] = spawnPositionsObjects[i].transform.position;
-        //}
 
     }
     private void Awake()
@@ -57,14 +51,12 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        gameCanvas.SetActive(false);
-        menuCanvas.SetActive(true);
+        ConnetMenuItems.SetActive(false);
+        JoinRoomMenuItems.SetActive(true);
         connectingText.text = "Connected!";
-
-
     }
 
-/*    public void JoinOrCreateRoom(string nickname)
+    public void JoinOrCreateRoom()
     {
         Debug.Log("joining ...");
         RoomOptions roomOptions = new RoomOptions();
@@ -72,13 +64,13 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = 10;
         PhotonNetwork.JoinOrCreateRoom("Estimation", roomOptions, TypedLobby.Default);
 
-    }*/
+    }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
 
-        gameCanvas.SetActive(false);
-        menuCanvas.SetActive(true);
+        GamePlayItems.SetActive(false);
+        ConnetMenuItems.SetActive(true);
         print("Disconnected from reason " + cause.ToString());
         connectingText.text = "Disconnected.";
     }
@@ -86,8 +78,8 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
-        gameCanvas.SetActive(true);
-        menuCanvas.SetActive(false);
+        GamePlayItems.SetActive(true);
+        JoinRoomMenuItems.SetActive(false);
 
         if(availableSpawnIndices.Count > 0) { 
             // Spawn the player when they join the room
@@ -98,16 +90,14 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
     [PunRPC]
     private void SpawnPlayer()
     {
-        //spawnPositionsObjects = GameObject.FindGameObjectsWithTag("SpawnPosition");
-
         // Instantiate the player prefab and position it in a spawn point
         Vector3 spawnPosition = GetSpawnPosition();
         myCard = PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
+        nickname = PhotonNetwork.LocalPlayer.NickName;
+        myCard.transform.Find("PlayerNameText").GetComponent<TextMeshProUGUI>().text   = nickname;
         photonView.RPC("SetCanvasAsParentRPC", RpcTarget.All);
-
-        //StartCoroutine(checkedOtherExistingPlayers());
-
     }
+
 
     [PunRPC]
     public void SetCanvasAsParentRPC()
@@ -124,12 +114,6 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         SetCanvasAsParent();
     }
 
-    /*    public void OnPlayerEnteredRoom(Player newPlayer)   
-        {
-            newPlayer.transform.SetParent(gameCanvas.transform);
-
-        }*/
-
     public void SetCanvasAsParent()
     {
         Players = GameObject.FindGameObjectsWithTag("Player");
@@ -137,24 +121,13 @@ public class NetworkingScript : MonoBehaviourPunCallbacks
         if (Players.Length>0) { 
         for(int i = 0; i < Players.Length; i++)
         {
-            Players[i].transform.SetParent(gameCanvas.transform);
-            //Players[i]..FindGameObjectsWithTag("PlayerName").text = PhotonNetwork.PlayerList..UserId.Substring(0, 4);
-
+            Players[i].transform.SetParent(GamePlayItems.transform);
             }
         }
-
     }
 
     private Vector3 GetSpawnPosition()
     {
-        /*        if (PhotonNetwork.CurrentRoom.PlayerCount<11)
-                {
-                    Vector3 spawnPosition = spawnPositions[PhotonNetwork.CurrentRoom.PlayerCount];
-
-                    //Vector3 spawnPosition = spawnPositions[nextSpawnIndex];
-                    nextSpawnIndex++;
-                    return spawnPosition;
-                }*/
 
         if (availableSpawnIndices.Count > 0)
         {
