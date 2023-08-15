@@ -9,16 +9,12 @@ public class JoinRoom : MonoBehaviour
 {
     [SerializeField] public TextMeshProUGUI nickname;
 
-     void Start()
-    {
-
-    }
     public void ConnectUsingSettings()
     {
         PhotonNetwork.NickName = nickname.text;
         PhotonNetwork.ConnectUsingSettings();
     }
-       public void JoinOrCreateRoom()
+    public void JoinOrCreateRoom()
     {
         NetworkingScript.Instance.JoinOrCreateRoom();
     }

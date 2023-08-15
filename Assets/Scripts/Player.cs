@@ -7,7 +7,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region IPunObservable implementation
     public bool IsVoting = false;
-    [SerializeField] public TextMeshProUGUI Vote ;
+    [SerializeField] public TextMeshProUGUI Vote;
     [SerializeField] private bool isRevealed = false;
     [SerializeField] private bool hasVoted = false;
     [SerializeField] public TextMeshProUGUI playerNameText;
@@ -44,7 +44,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(Vote.text);
             stream.SendNext(hasVoted);
             stream.SendNext(playerNameText.text);
-            //stream.SendNext(playerNameText.text);
         }
         else
         {
@@ -52,9 +51,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             this.Vote.text = (string)stream.ReceiveNext();
             this.hasVoted = (bool)stream.ReceiveNext();
             this.playerNameText.text = (string)stream.ReceiveNext();
-
-
-            //this.playerNameText.text = (string)stream.ReceiveNext();
         }
     }
     [PunRPC]
