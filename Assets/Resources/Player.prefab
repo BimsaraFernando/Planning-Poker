@@ -297,9 +297,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsVoting: 0
   Vote: {fileID: 3397786988739214550}
+  playerNameText: {fileID: 8441355401016824239}
   isRevealed: 0
   hasVoted: 0
-  playerNameText: {fileID: 8441355401016824239}
   rotatingItems: {fileID: 8299982378583375008}
   checkmark: {fileID: 6926714297538015109}
 --- !u!114 &8700764030827967841

@@ -7,22 +7,15 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region IPunObservable implementation
     public bool IsVoting = false;
-    [SerializeField] public TextMeshProUGUI Vote;
+    public TextMeshProUGUI Vote;
+    public TextMeshProUGUI playerNameText;
+
     [SerializeField] private bool isRevealed = false;
     [SerializeField] private bool hasVoted = false;
-    [SerializeField] public TextMeshProUGUI playerNameText;
-    private Quaternion initialRotation = Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
     [SerializeField] private GameObject rotatingItems;
     [SerializeField] private GameObject checkmark;
 
-
-    public void Start()
-    {
-        if (photonView.IsMine)
-        {
-            //PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.LocalPlayer.UserId.Substring(0, 4);
-        }
-    }
+    private Quaternion initialRotation = Quaternion.Euler(0f, 0f, 0f); // Initial rotation of the card
 
     void Update()
     {
@@ -53,41 +46,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             this.playerNameText.text = (string)stream.ReceiveNext();
         }
     }
-    [PunRPC]
-    public void RevealCards()
-    {
-        //rotatingItems.transform.Rotate(0f, 180f, 0f);
-        if (isRevealed)
-        {
-            StartCoroutine(RotateCardSmoothly(initialRotation));
-            hasVoted = false;
-            Vote.text = "";
-        }
-        else
-        {
-            Quaternion targetRotation = initialRotation * Quaternion.Euler(0f, 180f, 0f);
-            StartCoroutine(RotateCardSmoothly(targetRotation));
-        }
-
-        isRevealed = !isRevealed; // Toggle the reveal statuscard.transform.Rotate(0f, 90f, 0f);
-    }
-    private IEnumerator RotateCardSmoothly(Quaternion targetRotation)
-    {
-        float startTime = Time.time;
-        float duration = 0.75f; // Adjust the duration of the rotation
-
-        Quaternion startRotation = rotatingItems.transform.rotation;
-
-        while (Time.time - startTime < duration)
-        {
-            float t = (Time.time - startTime) / duration;
-            rotatingItems.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
-            yield return null;
-        }
-
-        // Ensure the rotation is exactly the target rotation
-        rotatingItems.transform.rotation = targetRotation;
-    }
 
     [PunRPC]
     public void SelectVoteRPC(string newVote)
@@ -106,5 +64,39 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         photonView.RPC("SelectVoteRPC", RpcTarget.All, newVote);
     }
 
+    [PunRPC]
+    public void RevealCards()
+    {
+        if (isRevealed)
+        {
+            StartCoroutine(RotateCardSmoothly(initialRotation));
+            hasVoted = false;
+            Vote.text = "";
+        }
+        else
+        {
+            Quaternion targetRotation = initialRotation * Quaternion.Euler(0f, 180f, 0f);
+            StartCoroutine(RotateCardSmoothly(targetRotation));
+        }
+
+        isRevealed = !isRevealed; // Toggle the reveal status
+    }
+    private IEnumerator RotateCardSmoothly(Quaternion targetRotation)
+    {
+        float startTime = Time.time;
+        float duration = 0.75f; // Adjust the duration of the rotation
+
+        Quaternion startRotation = rotatingItems.transform.rotation;
+
+        while (Time.time - startTime < duration)
+        {
+            float t = (Time.time - startTime) / duration;
+            rotatingItems.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+            yield return null;
+        }
+
+        // Ensure the rotation is exactly the target rotation
+        rotatingItems.transform.rotation = targetRotation;
+    }
     #endregion
 }

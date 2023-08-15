@@ -8,7 +8,6 @@ using UnityEngine;
 public class JoinRoom : MonoBehaviour
 {
     [SerializeField] public TextMeshProUGUI nickname;
-
     public void ConnectUsingSettings()
     {
         PhotonNetwork.NickName = nickname.text;
@@ -16,9 +15,6 @@ public class JoinRoom : MonoBehaviour
     }
     public void JoinOrCreateRoom()
     {
-        NetworkingScript.Instance.JoinOrCreateRoom();
+        GameManager.Instance.JoinOrCreateRoom();
     }
-
-
-
 }

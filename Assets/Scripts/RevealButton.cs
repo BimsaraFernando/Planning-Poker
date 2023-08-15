@@ -6,8 +6,8 @@ public class RevealButton : MonoBehaviourPun
 {
     [SerializeField] private GameObject VotingOptionsList;
     [SerializeField] private bool isRevealed = false;
-    [SerializeField] public TextMeshProUGUI revealButtonText;
-    [SerializeField] public GameObject[] Players;
+    public TextMeshProUGUI revealButtonText;
+    public GameObject[] Players;
 
     [PunRPC]
     public void RevealCards()
