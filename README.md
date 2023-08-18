@@ -1,4 +1,5 @@
 # Planning Poker
 
-Planning poker game for a scrum team
-demo http://bimsara.me/PlanningPoker/
+Planning Poker game for a scrum team. Made with unity and Photon unity engine. (PUN2)
+
+# demo http://bimsara.me/PlanningPoker/
